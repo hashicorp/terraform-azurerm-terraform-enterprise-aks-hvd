@@ -1,0 +1,27 @@
+# --- Common --- #
+friendly_name_prefix = "<sandbox>" # typically either environment (e.g. 'sandbox', 'prod') or team name
+resource_group_name  = "<my-tfe-rg>"
+location             = "<azure-region>"
+common_tags = {
+  App         = "TFE"
+  Environment = "<sandbox>"
+  Owner       = "<TeamName>"
+}
+
+# --- TFE config settings --- #
+tfe_fqdn                   = "<tfe-fqdn>"
+create_helm_overrides_file = true # set to `false` after initial deploy
+
+# --- Networking --- #
+vnet_id         = "<vnet-id>"
+aks_subnet_id   = "<aks-subnet-id>"
+db_subnet_id    = "<database-subnet-id>"
+redis_subnet_id = "<redis-subnet-id>"
+
+# --- Database --- #
+tfe_database_password_keyvault_id          = "<bootstrap-key-vault-id>"
+tfe_database_password_keyvault_secret_name = "<tfe-database-password-key-vault-secret-name>"
+
+# --- Object Storage --- #
+storage_account_ip_allow = ["<client-ip-addresses>"] # IP address(es) of machine you are running Terraform from to deploy TFE (without subnet masks)
+
