@@ -71,9 +71,9 @@ If you plan to create a new AKS cluster using this module, then you may skip thi
 
 1. Create/configure/validate the applicable [prerequisites](#prerequisites).
 
-2. Nested within the [examples](./examples/) directory are subdirectories that contain ready-made Terraform configurations of example scenarios for how to call and deploy this module. To get started, choose an example scenario. If you are starting without an existing AKS cluster, then you should select the [new-aks](examples/new-aks) example scenario.
+2. Nested within the [examples](./examples/) directory are subdirectories containing ready-made Terraform configurations for example scenarios on how to call and deploy this module. To get started, choose the example scenario that most closely matches your requirements. You can customize your deployment later by adding additional module [inputs](#inputs) as you see fit (see the [Deployment-Customizations](./docs/deployment-customizations.md) doc for more details).
 
-3. Copy all of the Terraform files from your example scenario of choice into a new destination directory to create your root Terraform configuration that will manage your TFE deployment. If you are not sure where to create this new directory, it is common for users to create an `environments/` directory at the root of this repo (once you have cloned it down locally), and then a subdirectory for each TFE instance deployment, like so:
+3. Copy all of the Terraform files from your example scenario of choice into a new destination directory to create your Terraform configuration that will manage your TFE deployment. This is a common directory structure for managing multiple TFE deployments:
 
     ```
     .
@@ -93,7 +93,7 @@ If you plan to create a new AKS cluster using this module, then you may skip thi
     ```
     >📝 Note: In this example, the user will have two separate TFE deployments; one for their `sandbox` environment, and one for their `production` environment. This is recommended, but not required.
 
-4. (Optional) Uncomment and update the [azurerm blob remote state backend](https://developer.hashicorp.com/terraform/language/settings/backends/azurerm) configuration provided in the `backend.tf` file with your own custom values. While this step is highly recommended, it is technically not required to use a remote backend config for your TFE deployment (if you are in a sandbox environment, for example).
+4. (Optional) Uncomment and update the [AzureRM remote state backend](https://developer.hashicorp.com/terraform/language/settings/backends/azurerm) configuration provided in the `backend.tf` file with your own custom values. While this step is highly recommended, it is technically not required to use a remote backend config for your TFE deployment (if you are in a sandbox environment, for example).
 
 5. Populate your own custom values into the `terraform.tfvars.example` file that was provided (in particular, values enclosed in the <> characters). Then, remove the `.example` file extension such that the file is now named `terraform.tfvars`.
 
@@ -104,7 +104,8 @@ If you plan to create a new AKS cluster using this module, then you may skip thi
 ## Post Steps
 
 7. Authenticate to your AKS cluster:
-   ```sh
+   
+   ```shell
    az login
    az account set --subscription <Subscription Name or ID>
    az aks get-credentials --resource-group <Resource Group> --name <AKS Cluster Name>
@@ -112,7 +113,7 @@ If you plan to create a new AKS cluster using this module, then you may skip thi
 
 8. Create the Kubernetes namespace for TFE:
    
-   ```
+   ```shell
    kubectl create namespace tfe
    ```
    
@@ -126,7 +127,7 @@ If you plan to create a new AKS cluster using this module, then you may skip thi
 
 12. Add the HashiCorp Helm registry:
     
-    ```sh
+    ```shell
     helm repo add hashicorp https://helm.releases.hashicorp.com
     ```
 
@@ -134,24 +135,27 @@ If you plan to create a new AKS cluster using this module, then you may skip thi
 
 13. Install the TFE application via `helm`:
     
-    ```sh
+    ```shell
     helm install terraform-enterprise hashicorp/terraform-enterprise --namespace <TFE_NAMESPACE> --values <TFE_OVERRIDES_FILE>
     ```
 
 14. Verify the TFE pod(s) are successfully starting:
     
     View the events within the namespace:
-    ```sh
+    
+    ```shell
     kubectl get events --namespace <TFE_NAMESPACE>
     ```
 
     View the pod(s) within the namespace:
-    ```sh
+    
+    ```shell
     kubectl get pods --namespace <TFE_NAMESPACE>
     ```
 
     View the logs from the pod:
-    ```sh
+    
+    ```shell
     kubectl logs <TFE_POD_NAME> --namespace <TFE_NAMESPACE> -f
     ```
 
@@ -159,18 +163,19 @@ If you plan to create a new AKS cluster using this module, then you may skip thi
     
     - If you are using a Kubernetes service of type `LoadBalancer` (what the module-generated Helm overrides defaults to), the DNS record should resolve to the static IP address of your TFE load balancer:
       
-      ```sh
+      ```shell
       kubectl get services --namespace <TFE_NAMESPACE>
       ```
     
     - If you are using a custom Kubernetes ingress (meaning you customized your Helm overrides in step 10), the DNS record should resolve to the IP address of your ingress controller load balancer.
-      ```sh
+      
+      ```shell
       kubectl get ingress <INGRESS_NAME> --namespace <INGRESS_NAMESPACE>
       ```
 
 16. Verify the TFE application is ready:
       
-    ```sh
+    ```shell
     curl https://<TFE_FQDN>/_health_check
     ```
 
@@ -182,12 +187,12 @@ If you plan to create a new AKS cluster using this module, then you may skip thi
 
 Below are links to various docs related to the customization and management of your TFE deployment:
 
- - [Deployment customizations](./docs/deployment-customizations.md)
- - [Helm overrides](./docs/helm-overrides.md)
- - [TFE version upgrades](./docs/tfe-version-upgrades.md)
- - [TFE TLS certificate rotation](./docs/tfe-cert-rotation.md)
- - [TFE configuration settings](./docs/tfe-config-settings.md)
- - [TFE Kubernetes secrets](./docs/kubernetes-secrets.md)
+- [Deployment Customizations](./docs/deployment-customizations.md)
+- [Helm Overrides](./docs/helm-overrides.md)
+- [TFE Version Upgrades](./docs/tfe-version-upgrades.md)
+- [TFE TLS certificate rotation](./docs/tfe-cert-rotation.md)
+- [TFE Configuration Settings](./docs/tfe-config-settings.md)
+- [TFE Kubernetes Secrets](./docs/kubernetes-secrets.md)
 
 ---
 
