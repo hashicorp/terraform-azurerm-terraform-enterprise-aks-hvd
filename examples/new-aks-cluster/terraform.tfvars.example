@@ -1,0 +1,35 @@
+# --- Common --- #
+friendly_name_prefix = "<sandbox>" # typically either environment (e.g. 'sandbox', 'prod') or team name
+resource_group_name  = "<my-tfe-rg>"
+location             = "<azure-region>"
+common_tags = {
+  App         = "TFE"
+  Environment = "<sandbox>"
+  Owner       = "<TeamName>"
+}
+
+# --- TFE config settings --- #
+tfe_fqdn                   = "<tfe-fqdn>"
+create_helm_overrides_file = true # set to `false` after initial deploy
+
+# --- Networking --- #
+vnet_id          = "<vnet-id>"
+tfe_lb_subnet_id = "<tfe_lb_subnet_id>"
+aks_subnet_id    = "<aks-subnet-id>"
+db_subnet_id     = "<database-subnet-id>"
+redis_subnet_id  = "<redis-subnet-id>"
+
+# --- AKS --- #
+create_aks_cluster                  = true
+aks_kubernetes_version              = "<1.29.7>"
+aks_api_server_authorized_ip_ranges = ["<list>", "<of>", "<CIDRs>"] # CIDR ranges of clients/workstations managing AKS cluster
+aks_default_node_pool_vm_size       = "<Azure machine size available in your region>"
+create_aks_tfe_node_pool            = true
+aks_tfe_node_pool_vm_size           = "<Azure machine size available in your region>"
+
+# --- Database --- #
+tfe_database_password_keyvault_id          = "<key-vault-id>" # ID of Azure Key Vault containing tfe_database_password secret
+tfe_database_password_keyvault_secret_name = "<tfe-database-password-key-vault-secret-name>"
+
+# --- Object Storage --- #
+storage_account_ip_allow = ["<client-ip-addresses>"] # IP address(es) of clients/workstations managing TFE deployment (without subnet masks)
