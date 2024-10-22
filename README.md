@@ -65,8 +65,6 @@ If you plan to create a new AKS cluster using this module, then you may skip thi
 - AKS cluster
   - `Network Contributor` role scoped to TFE pods subnet and (if applicable) TFE load balancer subnet
 
----
-
 ## Usage
 
 1. Create/configure/validate the applicable [prerequisites](#prerequisites).
@@ -75,7 +73,7 @@ If you plan to create a new AKS cluster using this module, then you may skip thi
 
 3. Copy all of the Terraform files from your example scenario of choice into a new destination directory to create your Terraform configuration that will manage your TFE deployment. This is a common directory structure for managing multiple TFE deployments:
 
-    ```
+    ```pre
     .
     └── environments
         ├── production
@@ -91,6 +89,7 @@ If you plan to create a new AKS cluster using this module, then you may skip thi
             ├── terraform.tfvars
             └── variables.tf
     ```
+
     >📝 Note: In this example, the user will have two separate TFE deployments; one for their `sandbox` environment, and one for their `production` environment. This is recommended, but not required.
 
 4. (Optional) Uncomment and update the [AzureRM remote state backend](https://developer.hashicorp.com/terraform/language/settings/backends/azurerm) configuration provided in the `backend.tf` file with your own custom values. While this step is highly recommended, it is technically not required to use a remote backend config for your TFE deployment (if you are in a sandbox environment, for example).
@@ -104,7 +103,7 @@ If you plan to create a new AKS cluster using this module, then you may skip thi
 ## Post Steps
 
 7. Authenticate to your AKS cluster:
-   
+
    ```shell
    az login
    az account set --subscription <Subscription Name or ID>
@@ -112,11 +111,11 @@ If you plan to create a new AKS cluster using this module, then you may skip thi
    ```
 
 8. Create the Kubernetes namespace for TFE:
-   
+
    ```shell
    kubectl create namespace tfe
    ```
-   
+
    >📝 Note: You can name it something different than `tfe` if you prefer. If you do name it differently, be sure to update your value of the `tfe_kube_namespace` input variable accordingly.
 
 9. Create the required secrets for your TFE deployment within your new Kubernetes namespace for TFE. There are several ways to do this, whether it be from the CLI via `kubectl`, or another method involving a third-party secrets helper/tool. See the [kubernetes-secrets](./docs/kubernetes-secrets.md) docs for details on the required secrets and how to create them.
@@ -126,7 +125,7 @@ If you plan to create a new AKS cluster using this module, then you may skip thi
 11. Now that you have customized your `module_generated_helm_overrides.yaml` file, rename it to something more applicable to your deployment, such as `prod_tfe_overrides.yaml` (or whatever you prefer). Then, within your `terraform.tfvars` file, set the value of `create_helm_overrides_file` to `false`, as we no longer want the Terraform module to manage this file or generate a new one on a subsequent Terraform run.
 
 12. Add the HashiCorp Helm registry:
-    
+
     ```shell
     helm repo add hashicorp https://helm.releases.hashicorp.com
     ```
@@ -134,54 +133,52 @@ If you plan to create a new AKS cluster using this module, then you may skip thi
    >📝 Note: If you have already added the `hashicorp` Helm repository, you should run `helm repo update hashicorp` to ensure that you have the latest version.
 
 13. Install the TFE application via `helm`:
-    
+
     ```shell
     helm install terraform-enterprise hashicorp/terraform-enterprise --namespace <TFE_NAMESPACE> --values <TFE_OVERRIDES_FILE>
     ```
 
 14. Verify the TFE pod(s) are successfully starting:
-    
+
     View the events within the namespace:
-    
+
     ```shell
     kubectl get events --namespace <TFE_NAMESPACE>
     ```
 
     View the pod(s) within the namespace:
-    
+
     ```shell
     kubectl get pods --namespace <TFE_NAMESPACE>
     ```
 
     View the logs from the pod:
-    
+
     ```shell
     kubectl logs <TFE_POD_NAME> --namespace <TFE_NAMESPACE> -f
     ```
 
 15. Create a DNS record for your TFE FQDN. The DNS record should resolve to your TFE load balancer, depending on how the load balancer was configured during your TFE deployment:
-    
+
     - If you are using a Kubernetes service of type `LoadBalancer` (what the module-generated Helm overrides defaults to), the DNS record should resolve to the static IP address of your TFE load balancer:
-      
+
       ```shell
       kubectl get services --namespace <TFE_NAMESPACE>
       ```
-    
+
     - If you are using a custom Kubernetes ingress (meaning you customized your Helm overrides in step 10), the DNS record should resolve to the IP address of your ingress controller load balancer.
-      
+
       ```shell
       kubectl get ingress <INGRESS_NAME> --namespace <INGRESS_NAMESPACE>
       ```
 
 16. Verify the TFE application is ready:
-      
+
     ```shell
     curl https://<TFE_FQDN>/_health_check
     ```
 
 17. Follow the remaining steps [here](https://developer.hashicorp.com/terraform/enterprise/flexible-deployments/install/kubernetes/install#4-create-initial-admin-user) to finish the installation setup, which involves creating the **initial admin user**.
-
----
 
 ## Docs
 
@@ -194,7 +191,14 @@ Below are links to various docs related to the customization and management of y
 - [TFE Configuration Settings](./docs/tfe-config-settings.md)
 - [TFE Kubernetes Secrets](./docs/kubernetes-secrets.md)
 
----
+## Module support
+
+This open source software is maintained by the HashiCorp Technical Field Organization, independently of our enterprise products. While our Support Engineering team provides dedicated support for our enterprise offerings, this open source software is not included.
+
+- For help using this open source software, please engage your account team.
+- To report bugs/issues with this open source software, please open them directly against this code repository using the GitHub issues feature.
+
+Please note that there is no official Service Level Agreement (SLA) for support of this software as a HashiCorp customer. This software falls under the definition of Community Software/Versions in your Agreement. We appreciate your understanding and collaboration in improving our open source projects.
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
@@ -252,15 +256,6 @@ Below are links to various docs related to the customization and management of y
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_db_subnet_id"></a> [db\_subnet\_id](#input\_db\_subnet\_id) | Subnet ID for PostgreSQL flexible server database. | `string` | n/a | yes |
-| <a name="input_friendly_name_prefix"></a> [friendly\_name\_prefix](#input\_friendly\_name\_prefix) | Friendly name prefix used for uniquely naming all Azure resources for this deployment. Most commonly set to either an environment (e.g. 'sandbox', 'prod'), a team name, or a project name. | `string` | n/a | yes |
-| <a name="input_location"></a> [location](#input\_location) | Azure region for this TFE deployment. | `string` | n/a | yes |
-| <a name="input_redis_subnet_id"></a> [redis\_subnet\_id](#input\_redis\_subnet\_id) | Subnet ID for Azure cache for Redis. | `string` | n/a | yes |
-| <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | Name of resource group for this TFE deployment. Must be an existing resource group if `create_resource_group` is `false`. | `string` | n/a | yes |
-| <a name="input_tfe_database_password_keyvault_id"></a> [tfe\_database\_password\_keyvault\_id](#input\_tfe\_database\_password\_keyvault\_id) | Resource ID of the Key Vault that contains the TFE database password. | `string` | n/a | yes |
-| <a name="input_tfe_database_password_keyvault_secret_name"></a> [tfe\_database\_password\_keyvault\_secret\_name](#input\_tfe\_database\_password\_keyvault\_secret\_name) | Name of the secret in the Key Vault that contains the TFE database password. | `string` | n/a | yes |
-| <a name="input_tfe_fqdn"></a> [tfe\_fqdn](#input\_tfe\_fqdn) | Fully qualified domain name of TFE instance. This name should eventually resolve to the TFE load balancer DNS name or IP address and will be what clients use to access TFE. | `string` | n/a | yes |
-| <a name="input_vnet_id"></a> [vnet\_id](#input\_vnet\_id) | VNet ID where TFE resources will reside. | `string` | n/a | yes |
 | <a name="input_aks_api_server_authorized_ip_ranges"></a> [aks\_api\_server\_authorized\_ip\_ranges](#input\_aks\_api\_server\_authorized\_ip\_ranges) | List of IP ranges that are allowed to access the AKS API server (control plane). | `list(string)` | `[]` | no |
 | <a name="input_aks_default_node_pool_max_surge"></a> [aks\_default\_node\_pool\_max\_surge](#input\_aks\_default\_node\_pool\_max\_surge) | The maximum number of nodes that can be added during an upgrade. | `string` | `"10%"` | no |
 | <a name="input_aks_default_node_pool_name"></a> [aks\_default\_node\_pool\_name](#input\_aks\_default\_node\_pool\_name) | Name of default node pool. | `string` | `"default"` | no |
@@ -276,7 +271,7 @@ Below are links to various docs related to the customization and management of y
 | <a name="input_aks_tfe_node_pool_node_count"></a> [aks\_tfe\_node\_pool\_node\_count](#input\_aks\_tfe\_node\_pool\_node\_count) | Number of nodes in the AKS TFE node pool. Only valid when `create_aks_tfe_node_pool` is `true`. | `number` | `2` | no |
 | <a name="input_aks_tfe_node_pool_vm_size"></a> [aks\_tfe\_node\_pool\_vm\_size](#input\_aks\_tfe\_node\_pool\_vm\_size) | Size of virtual machines in the AKS TFE node pool. Only valid when `create_aks_tfe_node_pool` is `true`. | `string` | `"Standard_D8ds_v5"` | no |
 | <a name="input_aks_workload_identity_enabled"></a> [aks\_workload\_identity\_enabled](#input\_aks\_workload\_identity\_enabled) | Boolean to enable Workload Identity for the AKS cluster. | `bool` | `true` | no |
-| <a name="input_availability_zones"></a> [availability\_zones](#input\_availability\_zones) | List of Azure availability zones to spread TFE resources across. | `set(string)` | <pre>[<br>  "1",<br>  "2",<br>  "3"<br>]</pre> | no |
+| <a name="input_availability_zones"></a> [availability\_zones](#input\_availability\_zones) | List of Azure availability zones to spread TFE resources across. | `set(string)` | <pre>[<br/>  "1",<br/>  "2",<br/>  "3"<br/>]</pre> | no |
 | <a name="input_common_tags"></a> [common\_tags](#input\_common\_tags) | Map of common tags for taggable Azure resources. | `map(string)` | `{}` | no |
 | <a name="input_create_aks_cluster"></a> [create\_aks\_cluster](#input\_create\_aks\_cluster) | Boolean to create a new AKS cluster for this TFE deployment. | `bool` | `false` | no |
 | <a name="input_create_aks_tfe_node_pool"></a> [create\_aks\_tfe\_node\_pool](#input\_create\_aks\_tfe\_node\_pool) | Boolean to create a new node pool for TFE in the AKS cluster. | `bool` | `false` | no |
@@ -287,13 +282,16 @@ Below are links to various docs related to the customization and management of y
 | <a name="input_create_resource_group"></a> [create\_resource\_group](#input\_create\_resource\_group) | Boolean to create a new resource group for this TFE deployment. | `bool` | `true` | no |
 | <a name="input_create_tfe_private_dns_record"></a> [create\_tfe\_private\_dns\_record](#input\_create\_tfe\_private\_dns\_record) | Boolean to create a DNS record for TFE in a private Azure DNS zone. A `private_dns_zone_name` must also be provided when `true`. | `bool` | `false` | no |
 | <a name="input_create_tfe_public_dns_record"></a> [create\_tfe\_public\_dns\_record](#input\_create\_tfe\_public\_dns\_record) | Boolean to create a DNS record for TFE in a public Azure DNS zone. A `public_dns_zone_name` must also be provided when `true`. | `bool` | `false` | no |
+| <a name="input_db_subnet_id"></a> [db\_subnet\_id](#input\_db\_subnet\_id) | Subnet ID for PostgreSQL flexible server database. | `string` | n/a | yes |
+| <a name="input_friendly_name_prefix"></a> [friendly\_name\_prefix](#input\_friendly\_name\_prefix) | Friendly name prefix used for uniquely naming all Azure resources for this deployment. Most commonly set to either an environment (e.g. 'sandbox', 'prod'), a team name, or a project name. | `string` | n/a | yes |
 | <a name="input_is_govcloud_region"></a> [is\_govcloud\_region](#input\_is\_govcloud\_region) | Boolean indicating if this TFE deployment is in an Azure Government Cloud region. | `bool` | `false` | no |
 | <a name="input_is_secondary_region"></a> [is\_secondary\_region](#input\_is\_secondary\_region) | Boolean indicating whether this TFE deployment is for 'primary' region or 'secondary' region. | `bool` | `false` | no |
+| <a name="input_location"></a> [location](#input\_location) | Azure region for this TFE deployment. | `string` | n/a | yes |
 | <a name="input_postgres_backup_retention_days"></a> [postgres\_backup\_retention\_days](#input\_postgres\_backup\_retention\_days) | Number of days to retain backups of PostgreSQL Flexible Server. | `number` | `35` | no |
 | <a name="input_postgres_create_mode"></a> [postgres\_create\_mode](#input\_postgres\_create\_mode) | Determines if the PostgreSQL Flexible Server is being created as a new server or as a replica. | `string` | `"Default"` | no |
 | <a name="input_postgres_enable_high_availability"></a> [postgres\_enable\_high\_availability](#input\_postgres\_enable\_high\_availability) | Boolean to enable `ZoneRedundant` high availability with PostgreSQL database. | `bool` | `false` | no |
 | <a name="input_postgres_geo_redundant_backup_enabled"></a> [postgres\_geo\_redundant\_backup\_enabled](#input\_postgres\_geo\_redundant\_backup\_enabled) | Boolean to enable PostreSQL geo-redundant backup configuration in paired Azure region. | `bool` | `true` | no |
-| <a name="input_postgres_maintenance_window"></a> [postgres\_maintenance\_window](#input\_postgres\_maintenance\_window) | Map of maintenance window settings for PostgreSQL flexible server. | `map(number)` | <pre>{<br>  "day_of_week": 0,<br>  "start_hour": 0,<br>  "start_minute": 0<br>}</pre> | no |
+| <a name="input_postgres_maintenance_window"></a> [postgres\_maintenance\_window](#input\_postgres\_maintenance\_window) | Map of maintenance window settings for PostgreSQL flexible server. | `map(number)` | <pre>{<br/>  "day_of_week": 0,<br/>  "start_hour": 0,<br/>  "start_minute": 0<br/>}</pre> | no |
 | <a name="input_postgres_primary_availability_zone"></a> [postgres\_primary\_availability\_zone](#input\_postgres\_primary\_availability\_zone) | Number for the availability zone for the db to reside in | `number` | `1` | no |
 | <a name="input_postgres_secondary_availability_zone"></a> [postgres\_secondary\_availability\_zone](#input\_postgres\_secondary\_availability\_zone) | Number for the availability zone for the db to reside in for the secondary node | `number` | `2` | no |
 | <a name="input_postgres_sku"></a> [postgres\_sku](#input\_postgres\_sku) | PostgreSQL database SKU. | `string` | `"GP_Standard_D4ds_v4"` | no |
@@ -309,15 +307,20 @@ Below are links to various docs related to the customization and management of y
 | <a name="input_redis_family"></a> [redis\_family](#input\_redis\_family) | The SKU family/pricing group to use. Valid values are C (for Basic/Standard SKU family) and P (for Premium). | `string` | `"P"` | no |
 | <a name="input_redis_min_tls_version"></a> [redis\_min\_tls\_version](#input\_redis\_min\_tls\_version) | Minimum TLS version to use with Redis cache. | `string` | `"1.2"` | no |
 | <a name="input_redis_sku_name"></a> [redis\_sku\_name](#input\_redis\_sku\_name) | Which SKU of Redis to use. Options are 'Basic', 'Standard', or 'Premium'. | `string` | `"Premium"` | no |
+| <a name="input_redis_subnet_id"></a> [redis\_subnet\_id](#input\_redis\_subnet\_id) | Subnet ID for Azure cache for Redis. | `string` | n/a | yes |
 | <a name="input_redis_version"></a> [redis\_version](#input\_redis\_version) | Redis cache version. Only the major version is needed. | `number` | `6` | no |
+| <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | Name of resource group for this TFE deployment. Must be an existing resource group if `create_resource_group` is `false`. | `string` | n/a | yes |
 | <a name="input_secondary_aks_subnet_id"></a> [secondary\_aks\_subnet\_id](#input\_secondary\_aks\_subnet\_id) | AKS subnet ID of existing TFE AKS cluster in secondary region. Used to allow AKS TFE nodes in secondary region access to TFE storage account in primary region. | `string` | `null` | no |
 | <a name="input_storage_account_ip_allow"></a> [storage\_account\_ip\_allow](#input\_storage\_account\_ip\_allow) | List of CIDRs allowed to access TFE Storage Account. | `list(string)` | `[]` | no |
 | <a name="input_storage_account_public_network_access_enabled"></a> [storage\_account\_public\_network\_access\_enabled](#input\_storage\_account\_public\_network\_access\_enabled) | Boolean to enable public network access to Azure Blob Storage Account. Needs to be `true` for initial creation. Set to `false` after initial creation. | `bool` | `true` | no |
 | <a name="input_storage_account_replication_type"></a> [storage\_account\_replication\_type](#input\_storage\_account\_replication\_type) | Which type of replication to use for TFE Storage Account. | `string` | `"ZRS"` | no |
 | <a name="input_tfe_database_name"></a> [tfe\_database\_name](#input\_tfe\_database\_name) | PostgreSQL database name for TFE. | `string` | `"tfe"` | no |
 | <a name="input_tfe_database_parameters"></a> [tfe\_database\_parameters](#input\_tfe\_database\_parameters) | Additional parameters to pass into the TFE database settings for the PostgreSQL connection URI. | `string` | `"sslmode=require"` | no |
+| <a name="input_tfe_database_password_keyvault_id"></a> [tfe\_database\_password\_keyvault\_id](#input\_tfe\_database\_password\_keyvault\_id) | Resource ID of the Key Vault that contains the TFE database password. | `string` | n/a | yes |
+| <a name="input_tfe_database_password_keyvault_secret_name"></a> [tfe\_database\_password\_keyvault\_secret\_name](#input\_tfe\_database\_password\_keyvault\_secret\_name) | Name of the secret in the Key Vault that contains the TFE database password. | `string` | n/a | yes |
 | <a name="input_tfe_database_user"></a> [tfe\_database\_user](#input\_tfe\_database\_user) | Name of PostgreSQL TFE database user to create. | `string` | `"tfe"` | no |
 | <a name="input_tfe_dns_record_target"></a> [tfe\_dns\_record\_target](#input\_tfe\_dns\_record\_target) | Target of the TFE DNS record. This should be the IP address that the TFE FQDN resolves to. | `string` | `null` | no |
+| <a name="input_tfe_fqdn"></a> [tfe\_fqdn](#input\_tfe\_fqdn) | Fully qualified domain name of TFE instance. This name should eventually resolve to the TFE load balancer DNS name or IP address and will be what clients use to access TFE. | `string` | n/a | yes |
 | <a name="input_tfe_http_port"></a> [tfe\_http\_port](#input\_tfe\_http\_port) | HTTP port number that the TFE application will listen on within the TFE pods. It is recommended to leave this as the default value. | `number` | `8080` | no |
 | <a name="input_tfe_https_port"></a> [tfe\_https\_port](#input\_tfe\_https\_port) | HTTPS port number that the TFE application will listen on within the TFE pods. It is recommended to leave this as the default value. | `number` | `8443` | no |
 | <a name="input_tfe_kube_namespace"></a> [tfe\_kube\_namespace](#input\_tfe\_kube\_namespace) | Kubernetes namespace for TFE deployment. | `string` | `"tfe"` | no |
@@ -329,6 +332,7 @@ Below are links to various docs related to the customization and management of y
 | <a name="input_tfe_primary_resource_group_name"></a> [tfe\_primary\_resource\_group\_name](#input\_tfe\_primary\_resource\_group\_name) | Name of existing resource group of TFE deployment in primary region. Only set when `is_secondary_region` is `true`. | `string` | `null` | no |
 | <a name="input_tfe_primary_storage_account_name"></a> [tfe\_primary\_storage\_account\_name](#input\_tfe\_primary\_storage\_account\_name) | Name of existing TFE storage account in primary region. Only set when `is_secondary_region` is `true`. | `string` | `null` | no |
 | <a name="input_tfe_primary_storage_container_name"></a> [tfe\_primary\_storage\_container\_name](#input\_tfe\_primary\_storage\_container\_name) | Name of existing TFE storage container (within TFE storage account) in primary region. Only set when `is_secondary_region` is `true`. | `string` | `null` | no |
+| <a name="input_vnet_id"></a> [vnet\_id](#input\_vnet\_id) | VNet ID where TFE resources will reside. | `string` | n/a | yes |
 
 ## Outputs
 
