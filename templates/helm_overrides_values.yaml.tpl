@@ -28,6 +28,7 @@ tfe:
 service:
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+    service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /_health_check
     service.beta.kubernetes.io/azure-load-balancer-ipv4: "<lb-static-ip>" # Available private IP address from TFE load balancer subnet
 %{ if tfe_lb_subnet_name != "" ~}
     service.beta.kubernetes.io/azure-load-balancer-internal-subnet: "${tfe_lb_subnet_name}"
