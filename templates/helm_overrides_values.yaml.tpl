@@ -28,7 +28,7 @@ tfe:
 service:
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
-		    # service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: "/_health_check" # prior to release 1.2.1
+    # service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: "/_health_check" # prior to release 1.2.1
     service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: "/api/v1/health/readiness" # as of release 1.2.1, the health check path was updated to match the TFE API health endpoint
     service.beta.kubernetes.io/azure-load-balancer-ipv4: "<lb-static-ip>" # Available private IP address from TFE load balancer subnet
 %{ if tfe_lb_subnet_name != "" ~}
