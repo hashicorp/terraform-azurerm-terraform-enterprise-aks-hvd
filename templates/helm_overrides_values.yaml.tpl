@@ -7,7 +7,8 @@ tls:
 image:
  repository: images.releases.hashicorp.com
  name: hashicorp/terraform-enterprise
- tag: <1.2.1>
+# tag: <v2025-02-07> # older TFE release versioning
+ tag: <1.2.1> # new tfe release versioning
 
 %{ if tfe_object_storage_azure_use_msi ~}
 serviceAccount:
