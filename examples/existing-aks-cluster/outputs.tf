@@ -67,3 +67,21 @@ output "tfe_redis_password_base64" {
   value     = module.tfe.tfe_redis_password_base64
   sensitive = true
 }
+
+output "tfe_redis_sidekiq_host" {
+  value = module.tfe.tfe_redis_sidekiq_host
+}
+
+output "tfe_redis_sidekiq_password" {
+  value     = module.tfe.tfe_redis_sidekiq_password
+  sensitive = true
+}
+
+output "tfe_redis_sidekiq_password_base64" {
+  value     = module.tfe.tfe_redis_sidekiq_password_base64
+  sensitive = true
+}
+
+output "tfe_redis_sidekiq_use_auth" {
+  value = module.tfe.tfe_redis_sidekiq_use_auth
+}

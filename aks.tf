@@ -14,12 +14,13 @@ resource "azurerm_kubernetes_cluster" "tfe" {
   kubernetes_version  = var.aks_kubernetes_version
 
   default_node_pool {
-    name           = var.aks_default_node_pool_name
-    node_count     = var.aks_default_node_pool_node_count
-    vm_size        = var.aks_default_node_pool_vm_size
-    os_sku         = "Ubuntu"
-    vnet_subnet_id = var.aks_subnet_id
-    zones          = var.availability_zones
+    name                        = var.aks_default_node_pool_name
+    node_count                  = var.aks_default_node_pool_node_count
+    vm_size                     = var.aks_default_node_pool_vm_size
+    temporary_name_for_rotation = var.aks_default_node_pool_temporary_name_for_rotation
+    os_sku                      = "Ubuntu"
+    vnet_subnet_id              = var.aks_subnet_id
+    zones                       = var.availability_zones
 
     upgrade_settings {
       max_surge = var.aks_default_node_pool_max_surge
