@@ -14,7 +14,9 @@ The module-generated `./helm/module_generated_helm_overrides.yaml` file derives 
 
 When Azure Managed Redis is selected, the generated file also renders:
 
+- `TFE_REDIS_USER` (set to `default` — required by Azure Managed Redis)
 - `TFE_REDIS_SIDEKIQ_HOST`
+- `TFE_REDIS_SIDEKIQ_USER` (set to `default` — required by Azure Managed Redis)
 - `TFE_REDIS_SIDEKIQ_USE_AUTH`
 - `TFE_REDIS_SIDEKIQ_USE_TLS`
 
@@ -70,6 +72,15 @@ service:
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: "/api/v1/health/readiness"
 ```
+
+>📝 Note: The module-generated Helm overrides file always includes the `azure-load-balancer-ipv4: "<lb-static-ip>"` annotation (intended for internal LB deployments). When using a second Helm values file to override to an external load balancer, Helm deep-merges the two files, so that placeholder annotation will still be present and will cause the service controller to fail looking for a non-existent static IP. After `helm install` or `helm upgrade`, remove the annotation with:
+>
+> ```sh
+> kubectl annotate svc terraform-enterprise -n <TFE_NAMESPACE> \
+>   "service.beta.kubernetes.io/azure-load-balancer-ipv4-"
+> ```
+>
+> Alternatively, remove the `azure-load-balancer-ipv4` line directly from your `module_generated_helm_overrides.yaml` file before running Helm.
 
 ## Redis
 

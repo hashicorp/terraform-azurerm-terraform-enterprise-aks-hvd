@@ -58,7 +58,8 @@ kubectl create secret generic tfe-secrets \
   --from-file=TFE_LICENSE=/path/to/tfe_license.hclic \
   --from-literal=TFE_ENCRYPTION_PASSWORD=<TFE_ENCRYPTION_PASSWORD> \
   --from-literal=TFE_DATABASE_PASSWORD=<TFE_DATABASE_PASSWORD> \
-  --from-literal=TFE_REDIS_PASSWORD=<TFE_REDIS_PASSWORD>
+  --from-literal=TFE_REDIS_PASSWORD=<TFE_REDIS_PASSWORD> \
+  --from-literal=TFE_OBJECT_STORAGE_AZURE_ACCOUNT_KEY=<TFE_OBJECT_STORAGE_AZURE_ACCOUNT_KEY>
 ```
 
 >📝 Note: Do not base64-encode these values; the `kubectl` command will do it for you.
@@ -72,7 +73,8 @@ kubectl create secret generic tfe-secrets \
   --from-literal=TFE_ENCRYPTION_PASSWORD=<TFE_ENCRYPTION_PASSWORD> \
   --from-literal=TFE_DATABASE_PASSWORD=<TFE_DATABASE_PASSWORD> \
   --from-literal=TFE_REDIS_PASSWORD=<TFE_REDIS_PASSWORD> \
-  --from-literal=TFE_REDIS_SIDEKIQ_PASSWORD=<TFE_REDIS_SIDEKIQ_PASSWORD>
+  --from-literal=TFE_REDIS_SIDEKIQ_PASSWORD=<TFE_REDIS_SIDEKIQ_PASSWORD> \
+  --from-literal=TFE_OBJECT_STORAGE_AZURE_ACCOUNT_KEY=<TFE_OBJECT_STORAGE_AZURE_ACCOUNT_KEY>
 ```
 
 #### TLS secrets

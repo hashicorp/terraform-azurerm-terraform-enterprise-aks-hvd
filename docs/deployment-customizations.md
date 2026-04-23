@@ -20,8 +20,22 @@ create_aks_cluster = false
 
 Set `tfe_image_tag` to control the TFE application version that Terraform and the generated Helm overrides target:
 
+Calver release (default format):
+
 ```hcl
 tfe_image_tag = "v202502-1"
+```
+
+Semver release:
+
+```hcl
+tfe_image_tag = "1.2.1"
+```
+
+Git commit hash:
+
+```hcl
+tfe_image_tag = "sha-abc1234"
 ```
 
 You can supply a calver release tag, a semver release tag, or a Git commit hash here.
