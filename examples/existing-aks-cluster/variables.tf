@@ -123,6 +123,21 @@ variable "create_helm_overrides_file" {
   default     = true
 }
 
+variable "tfe_image_tag" {
+  type        = string
+  description = "Tag for the TFE image. This may be a calver release tag, a semver release tag, or a Git commit hash."
+  default     = "v202402-1"
+
+  validation {
+    condition = (
+      can(regex("^v[0-9]{6}-[0-9]+$", var.tfe_image_tag)) ||
+      can(regex("^v?[0-9]+\\.[0-9]+(\\.[0-9]+)?$", var.tfe_image_tag)) ||
+      can(regex("^[0-9A-Fa-f]{7,40}$", var.tfe_image_tag))
+    )
+    error_message = "Value must be a supported TFE calver tag like `v202402-1`, a semver tag like `1.2.1`, or a Git commit hash like `1a2b3c4d`."
+  }
+}
+
 #------------------------------------------------------------------------------
 # Networking
 #------------------------------------------------------------------------------

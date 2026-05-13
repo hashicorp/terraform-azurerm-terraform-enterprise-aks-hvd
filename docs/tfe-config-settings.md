@@ -36,7 +36,23 @@ The TFE configuration settings for your deployment are managed within your Helm 
 4. Run `helm upgrade` to create a new TFE release.
    
    ```sh
-   helm upgrade terraform-enterprise hashicorp/terraform-enterprise --namespace <TFE_NAMESPACE> --values </path/to/tfe_helm_overrides.yaml>
-   ```
+    helm upgrade terraform-enterprise hashicorp/terraform-enterprise --namespace <TFE_NAMESPACE> --values </path/to/tfe_helm_overrides.yaml>
+    ```
 
 5. Delete the existing TFE pod(s), allowing Kubernetes to reschedule new ones.
+
+## Version-aware generated settings
+
+The module-generated Helm overrides file derives several settings from `tfe_image_tag`:
+
+- `image.tag` is rendered directly from `tfe_image_tag`
+- the Azure load balancer health probe path switches from `/_health_check` to `/api/v1/health/readiness` for commit-hash tags and semver releases `>= 1.2.1`
+- the Redis configuration switches from a single legacy Azure Cache for Redis endpoint to Azure Managed Redis with separate primary and Sidekiq endpoints for commit-hash tags and semver releases `>= 1.0.1`
+
+When Azure Managed Redis is selected, the generated Helm overrides file also renders:
+
+- `TFE_REDIS_SIDEKIQ_HOST`
+- `TFE_REDIS_SIDEKIQ_USE_AUTH`
+- `TFE_REDIS_SIDEKIQ_USE_TLS`
+
+The corresponding `TFE_REDIS_SIDEKIQ_PASSWORD` value remains a Kubernetes secret that you must create separately.

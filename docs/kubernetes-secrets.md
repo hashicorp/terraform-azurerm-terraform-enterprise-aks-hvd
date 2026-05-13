@@ -19,9 +19,12 @@ Password: your HashiCorp Terraform Enterprise license file (_e.g._ `terraform.hc
 - `TFE_ENCRYPTION_PASSWORD` - generate this yourself; this is used to encrypt and decrypt TFE's embedded Vault root token and unseal key.
 - `TFE_DATABASE_PASSWORD` - obtain from Terraform module output named `tfe_database_password` or `tfe_database_password_base64` depending on the format you need.
 - `TFE_REDIS_PASSWORD` - obtain from Terraform module output named `tfe_redis_password` or `tfe_redis_password_base64` depending on the format you need.
+- `TFE_REDIS_SIDEKIQ_PASSWORD` - required only when `tfe_image_tag` is a commit hash or a semver release `>= 1.0.1`; obtain from Terraform module output named `tfe_redis_sidekiq_password` or `tfe_redis_sidekiq_password_base64` depending on the format you need.
 - `TFE_OBJECT_STORAGE_AZURE_ACCOUNT_KEY` - obtain from Terraform module output named `tfe_object_storage_azure_account_key` or `tfe_object_storage_azure_account_key_base64` depending on the format you need.
 
 >📝 Note: To show the value of a sensitive Terraform output, run `terraform output <output-name>`.
+
+>📝 Note: When `tfe_image_tag` is a commit hash or a semver release `>= 1.0.1` and the module uses Azure Managed Redis, the generated Helm overrides also set `TFE_REDIS_USER=default` and `TFE_REDIS_SIDEKIQ_USER=default`. These usernames are required by Azure Managed Redis in addition to the corresponding passwords.
 
 ### 3. TLS Certificate and Private Key
 
@@ -55,10 +58,24 @@ kubectl create secret generic tfe-secrets \
   --from-file=TFE_LICENSE=/path/to/tfe_license.hclic \
   --from-literal=TFE_ENCRYPTION_PASSWORD=<TFE_ENCRYPTION_PASSWORD> \
   --from-literal=TFE_DATABASE_PASSWORD=<TFE_DATABASE_PASSWORD> \
-  --from-literal=TFE_REDIS_PASSWORD=<TFE_REDIS_PASSWORD>
+  --from-literal=TFE_REDIS_PASSWORD=<TFE_REDIS_PASSWORD> \
+  --from-literal=TFE_OBJECT_STORAGE_AZURE_ACCOUNT_KEY=<TFE_OBJECT_STORAGE_AZURE_ACCOUNT_KEY>
 ```
 
 >📝 Note: Do not base64-encode these values; the `kubectl` command will do it for you.
+
+If `tfe_image_tag` is a commit hash or a semver release `>= 1.0.1`, add the Sidekiq Redis password as well:
+
+```sh
+kubectl create secret generic tfe-secrets \
+  --namespace=<TFE_NAMESPACE> \
+  --from-file=TFE_LICENSE=/path/to/tfe_license.hclic \
+  --from-literal=TFE_ENCRYPTION_PASSWORD=<TFE_ENCRYPTION_PASSWORD> \
+  --from-literal=TFE_DATABASE_PASSWORD=<TFE_DATABASE_PASSWORD> \
+  --from-literal=TFE_REDIS_PASSWORD=<TFE_REDIS_PASSWORD> \
+  --from-literal=TFE_REDIS_SIDEKIQ_PASSWORD=<TFE_REDIS_SIDEKIQ_PASSWORD> \
+  --from-literal=TFE_OBJECT_STORAGE_AZURE_ACCOUNT_KEY=<TFE_OBJECT_STORAGE_AZURE_ACCOUNT_KEY>
+```
 
 #### TLS secrets
 
@@ -71,10 +88,11 @@ kubectl create secret tls tfe-certs \
 
 [🔙 to Post Steps (main README)](../README.md#post-steps)
 
-
 ## Appendix
 
 For visual representation purposes only, here is a Kubernetes manifest of the required secrets for a TFE deployment (the secrets that were created in the previous section).
+
+>📝 Note: Include `TFE_REDIS_SIDEKIQ_PASSWORD` only when `tfe_image_tag` is a commit hash or a semver release `>= 1.0.1` and the module is using Azure Managed Redis.
 
 ```yaml
 apiVersion: v1
@@ -98,6 +116,7 @@ data:
   TFE_ENCRYPTION_PASSWORD: <base64-encoded TFE encryption password>
   TFE_DATABASE_PASSWORD: <base64-encoded TFE PostgreSQL database password>
   TFE_REDIS_PASSWORD: <base64-encoded TFE Redis password>
+  TFE_REDIS_SIDEKIQ_PASSWORD: <base64-encoded TFE Sidekiq Redis password>
   TFE_OBJECT_STORAGE_AZURE_ACCOUNT_KEY: <base64-encoded TFE object storage account key>
 ---
 apiVersion: v1
