@@ -7,7 +7,8 @@ tls:
 image:
  repository: images.releases.hashicorp.com
  name: hashicorp/terraform-enterprise
- tag: <v202407-1>
+# tag: <v2025-02-07> # older TFE release versioning
+ tag: <1.2.1> # new tfe release versioning
 
 %{ if tfe_object_storage_azure_use_msi ~}
 serviceAccount:
@@ -28,7 +29,8 @@ tfe:
 service:
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
-    service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /_health_check
+    # service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: "/_health_check" # prior to release 1.2.1
+    service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: "/api/v1/health/readiness" # as of release 1.2.1, the health check path was updated to match the TFE API health endpoint
     service.beta.kubernetes.io/azure-load-balancer-ipv4: "<lb-static-ip>" # Available private IP address from TFE load balancer subnet
 %{ if tfe_lb_subnet_name != "" ~}
     service.beta.kubernetes.io/azure-load-balancer-internal-subnet: "${tfe_lb_subnet_name}"
@@ -66,4 +68,3 @@ env:
     TFE_REDIS_HOST: ${tfe_redis_host}
     TFE_REDIS_USE_AUTH: ${tfe_redis_use_auth}
     TFE_REDIS_USE_TLS: ${tfe_redis_use_tls}
-    

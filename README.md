@@ -175,9 +175,14 @@ If you plan to create a new AKS cluster using this module, then you may skip thi
 16. Verify the TFE application is ready:
 
     ```shell
+    # for Helm chart versions earlier than 1.2.1
     curl https://<TFE_FQDN>/_health_check
+    # for Helm chart version 1.2.1 and later:
+    # https://developer.hashicorp.com/terraform/enterprise/api-docs/readiness#sample-request
+    curl https://<TFE_FQDN>/api/v1/health/readiness?timeout=45
     ```
 
+    >📝 Note: `1.2.1` above refers to the Terraform Enterprise Helm chart version. TFE application/container image versions use the `vYYYYMM-N` format documented in [TFE Version Upgrades](./docs/tfe-version-upgrades.md).
 17. Follow the remaining steps [here](https://developer.hashicorp.com/terraform/enterprise/flexible-deployments/install/kubernetes/install#4-create-initial-admin-user) to finish the installation setup, which involves creating the **initial admin user**.
 
 ## Docs
