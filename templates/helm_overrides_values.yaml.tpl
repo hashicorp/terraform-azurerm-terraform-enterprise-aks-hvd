@@ -29,8 +29,7 @@ tfe:
 service:
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
-    # service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: "/_health_check" # prior to release 1.2.1
-    service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: "/api/v1/health/readiness" # as of release 1.2.1, the health check path was updated to match the TFE API health endpoint
+    service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: ${tfe_health_check_path}
     service.beta.kubernetes.io/azure-load-balancer-ipv4: "<lb-static-ip>" # Available private IP address from TFE load balancer subnet
 %{ if tfe_lb_subnet_name != "" ~}
     service.beta.kubernetes.io/azure-load-balancer-internal-subnet: "${tfe_lb_subnet_name}"
@@ -66,5 +65,15 @@ env:
 
     # Redis settings
     TFE_REDIS_HOST: ${tfe_redis_host}
+%{ if tfe_redis_user != "" ~}
+    TFE_REDIS_USER: ${tfe_redis_user}
+%{ endif ~}
     TFE_REDIS_USE_AUTH: ${tfe_redis_use_auth}
     TFE_REDIS_USE_TLS: ${tfe_redis_use_tls}
+%{ if tfe_render_redis_sidekiq_values ~}
+    TFE_REDIS_SIDEKIQ_HOST: ${tfe_redis_sidekiq_host}
+    TFE_REDIS_SIDEKIQ_USER: ${tfe_redis_sidekiq_user}
+    TFE_REDIS_SIDEKIQ_USE_AUTH: ${tfe_redis_sidekiq_use_auth}
+    TFE_REDIS_SIDEKIQ_USE_TLS: ${tfe_redis_sidekiq_use_tls}
+%{ endif ~}
+    
