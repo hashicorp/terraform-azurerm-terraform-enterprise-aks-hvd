@@ -5,7 +5,6 @@
 # Helm overrides values
 #------------------------------------------------------------------------------
 locals {
-  is_calver_tfe_image_tag      = can(regex("^v[0-9]{6}-[0-9]+$", var.tfe_image_tag))
   normalized_tfe_image_tag     = trimprefix(var.tfe_image_tag, "v")
   is_semver_tfe_image_tag      = can(regex("^[0-9]+\\.[0-9]+(\\.[0-9]+)?$", local.normalized_tfe_image_tag))
   is_commit_hash_tfe_image_tag = can(regex("^[0-9A-Fa-f]{7,40}$", var.tfe_image_tag))

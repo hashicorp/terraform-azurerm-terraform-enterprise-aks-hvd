@@ -35,7 +35,7 @@ tfe_image_tag = "1.2.1"
 Git commit hash:
 
 ```hcl
-tfe_image_tag = "sha-abc1234"
+tfe_image_tag = "abc1234"
 ```
 
 You can supply a calver release tag, a semver release tag, or a Git commit hash here.
