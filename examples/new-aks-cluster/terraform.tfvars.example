@@ -10,6 +10,7 @@ common_tags = {
 
 # --- TFE config settings --- #
 tfe_fqdn                   = "<tfe-fqdn>"
+tfe_image_tag              = "v202402-1"
 create_helm_overrides_file = true # set to `false` after initial deploy
 
 # --- Networking --- #

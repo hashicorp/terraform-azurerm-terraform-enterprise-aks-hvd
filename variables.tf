@@ -123,6 +123,21 @@ variable "create_helm_overrides_file" {
   default     = true
 }
 
+variable "tfe_image_tag" {
+  type        = string
+  description = "Tag for the TFE image. This may be a calver release tag, a semver release tag, or a Git commit hash and is used to select version-specific Helm readiness and Redis behavior."
+  default     = "v202402-1"
+
+  validation {
+    condition = (
+      can(regex("^v[0-9]{6}-[0-9]+$", var.tfe_image_tag)) ||
+      can(regex("^v?[0-9]+\\.[0-9]+(\\.[0-9]+)?$", var.tfe_image_tag)) ||
+      can(regex("^[0-9A-Fa-f]{7,40}$", var.tfe_image_tag))
+    )
+    error_message = "Value must be a supported TFE calver tag like `v202402-1`, a semver tag like `1.2.1`, or a Git commit hash like `1a2b3c4d`."
+  }
+}
+
 #------------------------------------------------------------------------------
 # Networking
 #------------------------------------------------------------------------------
@@ -150,7 +165,7 @@ variable "db_subnet_id" {
 
 variable "redis_subnet_id" {
   type        = string
-  description = "Subnet ID for Azure cache for Redis."
+  description = "Subnet ID for the Redis service used by TFE."
 }
 
 variable "secondary_aks_subnet_id" {
@@ -272,6 +287,12 @@ variable "aks_default_node_pool_vm_size" {
   type        = string
   description = "Size of the virtual machines within the AKS default node pool."
   default     = "Standard_D8ds_v5"
+}
+
+variable "aks_default_node_pool_temporary_name_for_rotation" {
+  type        = string
+  description = "Temporary name Azure uses when rotating the AKS default node pool during updates that replace the existing pool."
+  default     = null
 }
 
 variable "aks_default_node_pool_max_surge" {
@@ -522,11 +543,11 @@ variable "tfe_primary_storage_container_name" {
 }
 
 #------------------------------------------------------------------------------
-# Redis cache
+# Redis
 #------------------------------------------------------------------------------
 variable "redis_family" {
   type        = string
-  description = "The SKU family/pricing group to use. Valid values are C (for Basic/Standard SKU family) and P (for Premium)."
+  description = "The SKU family/pricing group to use for the legacy Azure Cache for Redis path. Valid values are C (for Basic/Standard SKU family) and P (for Premium)."
   default     = "P"
 
   validation {
@@ -537,7 +558,7 @@ variable "redis_family" {
 
 variable "redis_capacity" {
   type        = number
-  description = "The size of the Redis cache to deploy. Valid values for a SKU family of C (Basic/Standard) are 0, 1, 2, 3, 4, 5, 6, and for P (Premium) family are 1, 2, 3, 4."
+  description = "The size of the legacy Azure Cache for Redis deployment. Valid values for a SKU family of C (Basic/Standard) are 0, 1, 2, 3, 4, 5, 6, and for P (Premium) family are 1, 2, 3, 4."
   default     = 1
 
   validation {
@@ -548,7 +569,7 @@ variable "redis_capacity" {
 
 variable "redis_sku_name" {
   type        = string
-  description = "Which SKU of Redis to use. Options are 'Basic', 'Standard', or 'Premium'."
+  description = "Which SKU of Redis to use for the legacy Azure Cache for Redis path. Options are 'Basic', 'Standard', or 'Premium'."
   default     = "Premium"
 
   validation {
@@ -559,30 +580,52 @@ variable "redis_sku_name" {
 
 variable "redis_version" {
   type        = number
-  description = "Redis cache version. Only the major version is needed."
+  description = "Legacy Azure Cache for Redis version. Only the major version is needed."
   default     = 6
 }
 
 variable "redis_enable_authentication" {
   type        = bool
-  description = "Boolean to enable authentication to the Redis cache."
+  description = "Boolean to enable authentication to the Redis service used by TFE."
   default     = true
 }
 
 variable "redis_enable_non_ssl_port" {
   type        = bool
-  description = "Boolean to enable port non-SSL port 6379 for Redis cache."
+  description = "Boolean to enable port non-SSL port 6379 for the legacy Azure Cache for Redis path."
   default     = false
 }
 
 variable "redis_min_tls_version" {
   type        = string
-  description = "Minimum TLS version to use with Redis cache."
+  description = "Minimum TLS version to use with the legacy Azure Cache for Redis path."
   default     = "1.2"
 }
 
 variable "create_redis_private_endpoint" {
   type        = bool
-  description = "Boolean to create a private DNS zone and private endpoint for Redis cache."
+  description = "Boolean to create a private DNS zone and private endpoint for the Redis service used by TFE."
   default     = true
+}
+
+variable "redis_managed_sku_name" {
+  type        = string
+  description = "Managed Redis SKU to use when `tfe_image_tag` is a commit hash or a semver release `>= 1.0.1` and the module switches to Azure Managed Redis."
+  default     = "Balanced_B3"
+
+  validation {
+    condition     = length(trimspace(var.redis_managed_sku_name)) > 0
+    error_message = "Value must not be empty."
+  }
+}
+
+variable "redis_managed_high_availability_enabled" {
+  type        = bool
+  description = "Boolean to enable high availability for Azure Managed Redis instances when `tfe_image_tag` is a commit hash or a semver release `>= 1.0.1`."
+  default     = true
+
+  validation {
+    condition     = contains([true, false], var.redis_managed_high_availability_enabled)
+    error_message = "Value must be a boolean."
+  }
 }

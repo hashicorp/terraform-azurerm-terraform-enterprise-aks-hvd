@@ -81,25 +81,47 @@ output "tfe_object_storage_azure_use_msi" {
 # Redis
 #------------------------------------------------------------------------------
 output "tfe_redis_host" {
-  value       = try(azurerm_redis_cache.tfe.hostname, null)
-  description = "Hostname of the Redis cache."
+  value       = local.tfe_redis_uses_managed_redis ? azurerm_managed_redis.tfe[0].hostname : azurerm_redis_cache.tfe[0].hostname
+  description = "Hostname of the primary Redis service used by TFE."
 }
 
 output "tfe_redis_password" {
-  value       = try(azurerm_redis_cache.tfe.primary_access_key, null)
-  description = "Primary access key of the Redis cache."
+  value       = local.tfe_redis_uses_managed_redis ? try(local.redis_main_default_database.primary_access_key, null) : azurerm_redis_cache.tfe[0].primary_access_key
+  description = "Primary access key of the primary Redis service used by TFE."
   sensitive   = true
 }
 
 output "tfe_redis_password_base64" {
-  value       = try(base64encode(azurerm_redis_cache.tfe.primary_access_key), null)
-  description = "Base64-encoded primary access key of the Redis cache."
+  value       = local.tfe_redis_uses_managed_redis ? (try(local.redis_main_default_database.primary_access_key, null) != null ? base64encode(local.redis_main_default_database.primary_access_key) : null) : base64encode(azurerm_redis_cache.tfe[0].primary_access_key)
+  description = "Base64-encoded primary access key of the primary Redis service used by TFE."
   sensitive   = true
 }
 
 output "tfe_redis_use_auth" {
-  value       = try(azurerm_redis_cache.tfe.redis_configuration[0].enable_authentication, null)
-  description = "Boolean indicating whether TFE is using authentication to access the Redis cache."
+  value       = local.tfe_redis_uses_managed_redis ? try(local.redis_main_default_database.access_keys_authentication_enabled, true) : azurerm_redis_cache.tfe[0].redis_configuration[0].authentication_enabled
+  description = "Boolean indicating whether TFE is using authentication to access the primary Redis service."
+}
+
+output "tfe_redis_sidekiq_host" {
+  value       = local.tfe_redis_uses_managed_redis ? azurerm_managed_redis.tfe_sidekiq[0].hostname : null
+  description = "Hostname of the Sidekiq Redis service used by TFE when Azure Managed Redis is selected."
+}
+
+output "tfe_redis_sidekiq_password" {
+  value       = local.tfe_redis_uses_managed_redis ? try(local.redis_sidekiq_default_database.primary_access_key, null) : null
+  description = "Primary access key of the Sidekiq Redis service used by TFE when Azure Managed Redis is selected."
+  sensitive   = true
+}
+
+output "tfe_redis_sidekiq_password_base64" {
+  value       = local.tfe_redis_uses_managed_redis ? (try(local.redis_sidekiq_default_database.primary_access_key, null) != null ? base64encode(local.redis_sidekiq_default_database.primary_access_key) : null) : null
+  description = "Base64-encoded primary access key of the Sidekiq Redis service used by TFE when Azure Managed Redis is selected."
+  sensitive   = true
+}
+
+output "tfe_redis_sidekiq_use_auth" {
+  value       = local.tfe_redis_uses_managed_redis ? try(local.redis_sidekiq_default_database.access_keys_authentication_enabled, true) : null
+  description = "Boolean indicating whether TFE is using authentication to access the Sidekiq Redis service when Azure Managed Redis is selected."
 }
 
 #------------------------------------------------------------------------------

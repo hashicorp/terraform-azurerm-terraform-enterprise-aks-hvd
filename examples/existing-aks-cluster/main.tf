@@ -5,7 +5,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.116.0"
+      version = "~> 4.67"
     }
   }
 }
@@ -25,6 +25,7 @@ module "tfe" {
 
   # --- TFE config settings --- #
   tfe_fqdn                   = var.tfe_fqdn
+  tfe_image_tag              = var.tfe_image_tag
   create_helm_overrides_file = var.create_helm_overrides_file
 
   # --- Networking --- #

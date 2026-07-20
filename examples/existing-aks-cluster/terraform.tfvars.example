@@ -10,6 +10,7 @@ common_tags = {
 
 # --- TFE config settings --- #
 tfe_fqdn                   = "<tfe-fqdn>"
+tfe_image_tag              = "v202402-1"
 create_helm_overrides_file = true # set to `false` after initial deploy
 
 # --- Networking --- #
@@ -24,4 +25,3 @@ tfe_database_password_keyvault_secret_name = "<tfe-database-password-key-vault-s
 
 # --- Object Storage --- #
 storage_account_ip_allow = ["<client-ip-addresses>"] # IP address(es) of machine you are running Terraform from to deploy TFE (without subnet masks)
-
