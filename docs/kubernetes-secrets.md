@@ -86,7 +86,7 @@ kubectl create secret tls tfe-certs \
   --key=path/to/tls.key
 ```
 
-[🔙 to Post Steps (main README)](../README.md#post-steps)
+[🔙 to Post Steps (main README)](https://github.com/hashicorp/terraform-azurerm-terraform-enterprise-aks-hvd/blob/0.3.0/README.md#post-steps)
 
 ## Appendix
 
