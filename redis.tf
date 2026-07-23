@@ -44,7 +44,7 @@ resource "azurerm_managed_redis" "tfe" {
   default_database {
     access_keys_authentication_enabled = var.redis_enable_authentication
     client_protocol                    = "Encrypted"
-    clustering_policy                  = "EnterpriseCluster"
+    clustering_policy                  = "NoCluster"
   }
 
   tags = merge(
