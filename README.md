@@ -30,6 +30,8 @@ Terraform module aligned with HashiCorp Validated Designs (HVD) to deploy Terraf
   - Service delegation configured for PostgreSQL flexible servers (`Microsoft.DBforPostgreSQL/flexibleServers`) for join action (`Microsoft.Network/virtualNetworks/subnets/join/action`)
   - Service endpoint configured for `Microsoft.Storage`
 - Redis subnet ID for the Redis service used by TFE. The Redis subnet should be configured to allow the creation of private endpoints (`private_endpoint_network_policies_enabled` = `false`)
+- Do not deploy on public subnets because it is risky and not secure; deploy on private subnets 
+    - Here is a help guide distinguishing between private and public subnets [IP addressing for your VPCs and subnets](https://learn.microsoft.com/en-us/azure/virtual-network/ip-services/)
 
 #### Network security group (NSG)/firewall rules
 
