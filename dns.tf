@@ -23,7 +23,7 @@ data "azurerm_private_dns_zone" "tfe" {
 #------------------------------------------------------------------------------
 locals {
   tfe_hostname_public  = var.create_tfe_public_dns_record && var.public_dns_zone_name != null ? trimsuffix(substr(var.tfe_fqdn, 0, length(var.tfe_fqdn) - length(var.public_dns_zone_name) - 1), ".") : var.tfe_fqdn
-  tfe_hostname_private = var.create_tfe_private_dns_record && var.private_dns_zone_name != null ? trim(split(var.private_dns_zone_name, var.tfe_fqdn)[0], ".") : var.tfe_fqdn
+  tfe_hostname_private = var.create_tfe_private_dns_record && var.private_dns_zone_name != null ? trimsuffix(substr(var.tfe_fqdn, 0, length(var.tfe_fqdn) - length(var.private_dns_zone_name) - 1), ".") : var.tfe_fqdn
 }
 
 resource "azurerm_dns_a_record" "tfe" {
@@ -38,7 +38,7 @@ resource "azurerm_dns_a_record" "tfe" {
 }
 
 resource "azurerm_private_dns_a_record" "tfe" {
-  count = var.create_tfe_private_dns_record && var.private_dns_zone_name != null ? 1 : 0
+  count = var.create_tfe_private_dns_record && var.private_dns_zone_name != null && var.tfe_dns_record_target != null ? 1 : 0
 
   name                = local.tfe_hostname_private
   resource_group_name = var.private_dns_zone_rg_name

@@ -143,7 +143,10 @@ If you plan to create a new AKS cluster using this module, then you may skip thi
 13. Install the TFE application via `helm`:
 
     ```shell
-    helm install terraform-enterprise hashicorp/terraform-enterprise --namespace <TFE_NAMESPACE> --values <TFE_OVERRIDES_FILE>
+    helm install terraform-enterprise hashicorp/terraform-enterprise \
+    --namespace <TFE_NAMESPACE> \
+    --values <TFE_OVERRIDES_FILE> \
+    --set serviceAccount.annotations."azure\.workload\.identity/client-id"=\$(terraform output -raw tfe_object_storage_azure_client_id)
     ```
 
 14. Verify the TFE pod(s) are successfully starting:
