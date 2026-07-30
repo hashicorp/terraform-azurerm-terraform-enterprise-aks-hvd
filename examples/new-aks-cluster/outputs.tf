@@ -65,6 +65,10 @@ output "tfe_object_storage_azure_use_msi" {
   value = module.tfe.tfe_object_storage_azure_use_msi
 }
 
+output "tfe_object_storage_azure_client_id" {
+  value = module.tfe.tfe_object_storage_azure_client_id
+}
+
 #------------------------------------------------------------------------------
 # Redis
 #------------------------------------------------------------------------------

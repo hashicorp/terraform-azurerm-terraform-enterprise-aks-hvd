@@ -23,10 +23,9 @@ resource "azurerm_role_assignment" "tfe_blob_storage" {
 resource "azurerm_federated_identity_credential" "tfe_kube_service_account" {
   count = var.aks_workload_identity_enabled ? 1 : 0
 
-  name                = "tfe-kube-service-account"
-  resource_group_name = local.resource_group_name
-  audience            = ["api://AzureADTokenExchange"]
-  issuer              = azurerm_kubernetes_cluster.tfe[0].oidc_issuer_url
-  parent_id           = azurerm_user_assigned_identity.tfe[0].id
-  subject             = "system:serviceaccount:${var.tfe_kube_namespace}:${var.tfe_kube_service_account}"
+  name                        = "tfe-kube-service-account"
+  audience                    = ["api://AzureADTokenExchange"]
+  issuer                      = azurerm_kubernetes_cluster.tfe[0].oidc_issuer_url
+  user_assigned_identity_id   = azurerm_user_assigned_identity.tfe[0].id
+  subject                     = "system:serviceaccount:${var.tfe_kube_namespace}:${var.tfe_kube_service_account}"
 }

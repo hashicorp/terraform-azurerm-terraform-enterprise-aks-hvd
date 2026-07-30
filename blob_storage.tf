@@ -28,8 +28,8 @@ resource "azurerm_storage_account" "tfe" {
 resource "azurerm_storage_container" "tfe" {
   count = var.is_secondary_region ? 0 : 1
 
-  name                  = "tfeblob"
-  storage_account_name  = azurerm_storage_account.tfe[0].name
+  name                 = "tfeblob"
+  storage_account_id   = azurerm_storage_account.tfe[0].id
   container_access_type = "private"
 }
 
