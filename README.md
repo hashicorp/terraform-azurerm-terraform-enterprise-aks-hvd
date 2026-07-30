@@ -73,7 +73,7 @@ If you plan to create a new AKS cluster using this module, then you may skip thi
 
 1. Create/configure/validate the applicable [prerequisites](#prerequisites).
 
-2. Nested within the [examples](./examples/) directory are subdirectories containing ready-made Terraform configurations for example scenarios on how to call and deploy this module. To get started, choose the example scenario that most closely matches your requirements. You can customize your deployment later by adding additional module [inputs](#inputs) as you see fit (see the [Deployment-Customizations](./docs/deployment-customizations.md) doc for more details).
+2. Nested within the [examples](https://github.com/hashicorp/terraform-azurerm-terraform-enterprise-aks-hvd/blob/0.3.0/examples/) directory are subdirectories containing ready-made Terraform configurations for example scenarios on how to call and deploy this module. To get started, choose the example scenario that most closely matches your requirements. You can customize your deployment later by adding additional module [inputs](#inputs) as you see fit (see the [Deployment-Customizations](https://github.com/hashicorp/terraform-azurerm-terraform-enterprise-aks-hvd/blob/0.3.0/docs/deployment-customizations.md) doc for more details).
 
 3. Copy all of the Terraform files from your example scenario of choice into a new destination directory to create your Terraform configuration that will manage your TFE deployment. This is a common directory structure for managing multiple TFE deployments:
 
@@ -122,11 +122,11 @@ If you plan to create a new AKS cluster using this module, then you may skip thi
 
    >📝 Note: You can name it something different than `tfe` if you prefer. If you do name it differently, be sure to update your value of the `tfe_kube_namespace` input variable accordingly.
 
-9. Create the required secrets for your TFE deployment within your new Kubernetes namespace for TFE. There are several ways to do this, whether it be from the CLI via `kubectl`, or another method involving a third-party secrets helper/tool. See the [kubernetes-secrets](./docs/kubernetes-secrets.md) docs for details on the required secrets and how to create them.
+9. Create the required secrets for your TFE deployment within your new Kubernetes namespace for TFE. There are several ways to do this, whether it be from the CLI via `kubectl`, or another method involving a third-party secrets helper/tool. See the [kubernetes-secrets](https://github.com/hashicorp/terraform-azurerm-terraform-enterprise-aks-hvd/blob/0.3.0/docs/kubernetes-secrets.md) docs for details on the required secrets and how to create them.
 
     >📝 Note: If `tfe_image_tag` is a commit hash or a semver release `>= 1.0.1`, the module provisions Azure Managed Redis for both the primary TFE Redis connection and the Sidekiq Redis connection. In that case you must also create a `TFE_REDIS_SIDEKIQ_PASSWORD` secret value from the corresponding Terraform output. The generated Helm overrides also set the required Azure Managed Redis usernames (`TFE_REDIS_USER=default` and `TFE_REDIS_SIDEKIQ_USER=default`) automatically, and the managed Redis databases are created with the `EnterpriseCluster` clustering policy so TFE uses the Managed Redis topology intended for standard Redis clients instead of the redirecting `OSSCluster` mode.
 
-10. This Terraform module will automatically generate a Helm overrides file within your Terraform working directory named `./helm/module_generated_helm_overrides.yaml`. This Helm overrides file contains values interpolated from some of the infrastructure resources that were created by Terraform in step 6. Within the Helm overrides file, update or validate the values for the remaining settings that are enclosed in the `<>` characters. You may also add any additional configuration settings into your Helm overrides file at this time (see the [helm-overrides](./docs/helm-overrides.md) doc for more details).
+10. This Terraform module will automatically generate a Helm overrides file within your Terraform working directory named `./helm/module_generated_helm_overrides.yaml`. This Helm overrides file contains values interpolated from some of the infrastructure resources that were created by Terraform in step 6. Within the Helm overrides file, update or validate the values for the remaining settings that are enclosed in the `<>` characters. You may also add any additional configuration settings into your Helm overrides file at this time (see the [helm-overrides](https://github.com/hashicorp/terraform-azurerm-terraform-enterprise-aks-hvd/blob/0.3.0/docs/helm-overrides.md) doc for more details).
 
     >📝 Note: The generated file now derives `image.tag`, the Azure load balancer health probe path, and any Sidekiq Redis environment variables from the `tfe_image_tag` value used during `terraform apply`.
 
@@ -202,7 +202,7 @@ If you plan to create a new AKS cluster using this module, then you may skip thi
     curl https://<TFE_FQDN>/api/v1/health/readiness?timeout=45
     ```
 
-    >📝 Note: `1.2.1` above refers to the Terraform Enterprise Helm chart version. TFE application/container image versions use the `vYYYYMM-N` format documented in [TFE Version Upgrades](./docs/tfe-version-upgrades.md).
+    >📝 Note: `1.2.1` above refers to the Terraform Enterprise Helm chart version. TFE application/container image versions use the `vYYYYMM-N` format documented in [TFE Version Upgrades](https://github.com/hashicorp/terraform-azurerm-terraform-enterprise-aks-hvd/blob/0.3.0/docs/tfe-version-upgrades.md).
 
 17. Follow the remaining steps [here](https://developer.hashicorp.com/terraform/enterprise/flexible-deployments/install/kubernetes/install#4-create-initial-admin-user) to finish the installation setup, which involves creating the **initial admin user**.
 
@@ -210,12 +210,12 @@ If you plan to create a new AKS cluster using this module, then you may skip thi
 
 Below are links to various docs related to the customization and management of your TFE deployment:
 
-- [Deployment Customizations](./docs/deployment-customizations.md)
-- [Helm Overrides](./docs/helm-overrides.md)
-- [TFE Version Upgrades](./docs/tfe-version-upgrades.md)
-- [TFE TLS certificate rotation](./docs/tfe-cert-rotation.md)
-- [TFE Configuration Settings](./docs/tfe-config-settings.md)
-- [TFE Kubernetes Secrets](./docs/kubernetes-secrets.md)
+- [Deployment Customizations](https://github.com/hashicorp/terraform-azurerm-terraform-enterprise-aks-hvd/blob/0.3.0/docs/deployment-customizations.md)
+- [Helm Overrides](https://github.com/hashicorp/terraform-azurerm-terraform-enterprise-aks-hvd/blob/0.3.0/docs/helm-overrides.md)
+- [TFE Version Upgrades](https://github.com/hashicorp/terraform-azurerm-terraform-enterprise-aks-hvd/blob/0.3.0/docs/tfe-version-upgrades.md)
+- [TFE TLS certificate rotation](https://github.com/hashicorp/terraform-azurerm-terraform-enterprise-aks-hvd/blob/0.3.0/docs/tfe-cert-rotation.md)
+- [TFE Configuration Settings](https://github.com/hashicorp/terraform-azurerm-terraform-enterprise-aks-hvd/blob/0.3.0/docs/tfe-config-settings.md)
+- [TFE Kubernetes Secrets](https://github.com/hashicorp/terraform-azurerm-terraform-enterprise-aks-hvd/blob/0.3.0/docs/kubernetes-secrets.md)
 
 ## Module support
 
