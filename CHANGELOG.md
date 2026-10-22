@@ -1,3 +1,20 @@
+## v0.4.0
+
+## What's Changed
+* edited readme to warn against using public subnets and provided docum… by @katie-maxwell in https://github.com/hashicorp/terraform-azurerm-terraform-enterprise-aks-hvd/pull/25
+* Update redis.tf by @abuxton in https://github.com/hashicorp/terraform-azurerm-terraform-enterprise-aks-hvd/pull/24
+* Changes to automate helm install using terraform output by @katie-maxwell in https://github.com/hashicorp/terraform-azurerm-terraform-enterprise-aks-hvd/pull/26
+* fix: cap azurerm provider version below 5.0 to prevent breaking changes by @minsikl in https://github.com/hashicorp/terraform-azurerm-terraform-enterprise-aks-hvd/pull/27
+* Release 0.3.0 by @abuxton in https://github.com/hashicorp/terraform-azurerm-terraform-enterprise-aks-hvd/pull/23
+* [COMPLIANCE] Add/Update Copyright Headers by @hashicorp-copywrite[bot] in https://github.com/hashicorp/terraform-azurerm-terraform-enterprise-aks-hvd/pull/29
+* upstream merge template repository by @github-actions[bot] in https://github.com/hashicorp/terraform-azurerm-terraform-enterprise-aks-hvd/pull/28
+
+## New Contributors
+* @katie-maxwell made their first contribution in https://github.com/hashicorp/terraform-azurerm-terraform-enterprise-aks-hvd/pull/25
+* @minsikl made their first contribution in https://github.com/hashicorp/terraform-azurerm-terraform-enterprise-aks-hvd/pull/27
+
+**Full Changelog**: https://github.com/hashicorp/terraform-azurerm-terraform-enterprise-aks-hvd/compare/0.3.0...0.4.0
+
 ## v0.3.0
 
 ## What's Changed
